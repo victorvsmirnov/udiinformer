@@ -1,17 +1,16 @@
 from gevent import monkey
 monkey.patch_all()
 # then import this
-import datetime
-import logging
-import re
-import playwright.helper
-from bs4 import BeautifulSoup
-from playwright import sync_playwright
-from pydantic import BaseSettings, SecretStr
+from telegram import Update
 from telegram.ext import (CallbackContext, CommandHandler,
                           Updater, PicklePersistence)
-from telegram import Update
-
+from pydantic import BaseSettings, SecretStr
+from playwright import sync_playwright
+from bs4 import BeautifulSoup
+import playwright.helper
+import re
+import logging
+import datetime
 
 
 # Enable logging
@@ -22,6 +21,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 EMAIL_REGEXP = re.compile('^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$')
+
 
 class Settings(BaseSettings):
     TOKEN: SecretStr
@@ -144,6 +144,7 @@ def check_udi(update: Update, context:  CallbackContext):
     except Exception as exc:
         logger.error(exc)
         update.message.reply_text("Unable to reach udi.no. Try again later")
+        my_browser.close()
         return
     try:
         page.type("#logonIdentifier", context.user_data.get("username"))
@@ -157,6 +158,7 @@ def check_udi(update: Update, context:  CallbackContext):
     except Exception as exc:
         logger.error(exc)
         update.message.reply_text("Unable to login. Check credentials")
+        my_browser.close()
         return
     try:
         # page.screenshot(path="screenshot_2_applicationlist.png")
@@ -181,6 +183,7 @@ def check_udi(update: Update, context:  CallbackContext):
         logger.error(exc)
         update.message.reply_text(
             "Unable to find the appointment. Have you booked one?")
+        my_browser.close()
         return
     page.click(change_appointment_btn)
 
@@ -219,7 +222,9 @@ def check_udi(update: Update, context:  CallbackContext):
             logger.error(exc)
             update.message.reply_text(
                 "I couldn't get the UDI's calendar. Please try again later")
+            my_browser.close()
             return
+        my_browser.close()
 
 
 not_available_re = re.compile(
