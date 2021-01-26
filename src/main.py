@@ -9,6 +9,7 @@ from playwright import sync_playwright
 from bs4 import BeautifulSoup
 import playwright.helper
 import re
+import os
 import logging
 import datetime
 
@@ -34,8 +35,11 @@ class Settings(BaseSettings):
 
 def main():
     config = Settings()
+    token = os.getenv("UDI_TOKEN")
+    if len (config.TOKEN.get_secret_value()) == 0 :
+        token = config.TOKEN.get_secret_value()
     my_persistence = PicklePersistence(filename='bot_status.db')
-    updater = Updater(config.TOKEN.get_secret_value(),
+    updater = Updater(token=token,
                       use_context=True, persistence=my_persistence)
 
     # Get the dispatcher to register handlers

@@ -27,6 +27,8 @@ telegram-send==0.25       # via -r requirements.in
 tornado==6.0.4            # via python-telegram-bot
 typing-extensions==3.7.4.3  # via playwright
 tzlocal==2.1              # via apscheduler, dateparser
+gevent==21.1.2
+bs4==0.0.1
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
